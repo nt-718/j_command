@@ -3,7 +3,6 @@
 
 PROMPT_COMMAND=${PROMPT_COMMAND:+"$PROMPT_COMMAND; "}'zz'
 
-
 zz() {
 
 	CURRENT=$(pwd)
@@ -21,7 +20,8 @@ zz() {
 		
 		while read line
 	do
-		DIR_NAME=`echo $line | grep $1 | sed -e 's/.*\/\([^\/]*\)$/\1/'`
+		lineforgrep=${line,,}
+		DIR_NAME=`echo $lineforgrep | grep $1 | sed -e 's/.*\/\([^\/]*\)$/\1/'`
 
 		[[ "$DIR_NAME" =~ $1 ]] && break
 
@@ -34,3 +34,4 @@ zz() {
 		fi
 	fi
 }
+
