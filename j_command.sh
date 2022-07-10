@@ -2,39 +2,46 @@
 
 j() {
 
-        CURRENT=$(pwd)
+	CURRENT=$(pwd)
 
-        if [[ -z "$1" ]]; then
+	if [[ -z "$1" ]]; then
+		
+		check=`cat ~/zzz.txt | grep -x $CURRENT`
 
-                check=`cat ~/zzz.txt | grep -x $CURRENT`
+		if [[ -z "$check" ]]; then
+		
+			echo "$CURRENT" >> ~/zzz.txt
+		fi
 
-                if [[ -z "$check" ]]; then
+	elif [[ "$1" == --edit ]]; then
+		vim ~/zzz.txt
+	
+	elif [[ "$1" == --start ]]; then
+	
+		PROMPT_COMMAND=${PROMPT_COMMAND:+"$PROMPT_COMMAND; "}'j'
 
-                        echo "$CURRENT" >> ~/zzz.txt
-                fi
+	elif [[ "$1" == --sort ]]; then
+		sortfile=`cat ~/zzz.txt | awk '{print length() ,$0}' | sort -n | awk '{print $2}'`
 
-        elif [[ "$1" == -e ]]; then
-                vim ~/zzz.txt
+		echo "$sortfile" > ~/zzz.txt
 
-        elif [[ "$1" == -s ]]; then
+	else	
 
-                PROMPT_COMMAND=${PROMPT_COMMAND:+"$PROMPT_COMMAND; "}'j'
+		while read line
+	do
+		#lineforgrep=${line,,}
+		#DIR_NAME=`echo "$line" | grep "$1" | sed -e 's/.*\/\([^\/]*\)$/\1/'`
+		DIR_NAME=`echo "$line" | grep "$1"` # j A/Bのように検索できる
 
-        else
+		[[ "$DIR_NAME" =~ "$1" ]] && break
 
-                while read line
-        do
-                #lineforgrep=${line,,}
-                DIR_NAME=`echo "$line" | grep "$1" | sed -e 's/.*\/\([^\/]*\)$/\1/'`
+	done < ~/zzz.txt
 
-                [[ "$DIR_NAME" =~ "$1" ]] && break
-
-        done < ~/zzz.txt
-
-                if [[ -z "$line" ]]; then
-                        echo "No such a directory"
-                else
-                        cd "$line"
-                fi
-        fi
+		if [[ -z "$line" ]]; then
+			echo "No such a directory"
+		else
+			cd "$line"
+		fi
+	fi
 }
+
