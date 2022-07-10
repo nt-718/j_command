@@ -1,37 +1,40 @@
 #!/bin/sh
 
+j() {
 
-PROMPT_COMMAND=${PROMPT_COMMAND:+"$PROMPT_COMMAND; "}'zz'
+        CURRENT=$(pwd)
 
-zz() {
+        if [[ -z "$1" ]]; then
 
-	CURRENT=$(pwd)
+                check=`cat ~/zzz.txt | grep -x $CURRENT`
 
-	check=`cat ~/zzz.txt | grep $CURRENT`
+                if [[ -z "$check" ]]; then
 
-	if [ -z $1 ]; then
+                        echo "$CURRENT" >> ~/zzz.txt
+                fi
 
-		if [ -z "$check" ]; then
-		
-			echo "$CURRENT" >> ~/zzz.txt
-		fi
+        elif [[ "$1" == -e ]]; then
+                vim ~/zzz.txt
 
-	else
-		
-		while read line
-	do
-		lineforgrep=${line,,}
-		DIR_NAME=`echo $lineforgrep | grep $1 | sed -e 's/.*\/\([^\/]*\)$/\1/'`
+        elif [[ "$1" == -s ]]; then
 
-		[[ "$DIR_NAME" =~ $1 ]] && break
+                PROMPT_COMMAND=${PROMPT_COMMAND:+"$PROMPT_COMMAND; "}'j'
 
-	done < ~/zzz.txt
+        else
 
-		if [ -z $line ]; then
-			echo "No such a directory"
-		else
-			cd $line
-		fi
-	fi
+                while read line
+        do
+                #lineforgrep=${line,,}
+                DIR_NAME=`echo "$line" | grep "$1" | sed -e 's/.*\/\([^\/]*\)$/\1/'`
+
+                [[ "$DIR_NAME" =~ "$1" ]] && break
+
+        done < ~/zzz.txt
+
+                if [[ -z "$line" ]]; then
+                        echo "No such a directory"
+                else
+                        cd "$line"
+                fi
+        fi
 }
-
