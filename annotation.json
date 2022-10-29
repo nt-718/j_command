@@ -1,0 +1,40 @@
+{
+    "success": true,
+    "rpa_setting": {
+        "id": "8",
+        "company_id": "1524",
+        "event_match_condition": {
+            "enable_event_match_condition": true,
+            "value": {
+                "enable_m_event_create": false,
+                "enable_m_event_status": false,
+                "match_condition": [
+					"1",
+					"2"
+                ]
+            },
+            "content": {
+                "enable_m_event_create": false,
+                "m_selection_step": "28",
+                "test": {
+                    "error": "error",
+				"match_condition": [
+					[
+						"1"
+					],
+
+					[
+						"2"
+					]
+				]
+
+                }
+            }
+        },
+        "created_at": "2022-10-17 15:07:26",
+        "step_name": "\u30a8\u30f3\u30c8\u30ea\u30fc_28",
+        "event_match_condition_json": {
+            "aaaaa": "bbbbb"
+        }
+    }
+}
