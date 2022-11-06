@@ -1,0 +1,31 @@
+_j() {
+
+        local cur rev opts
+        _get_comp_words_by_ref -n : cur prev
+
+        dirname=`echo "${COMP_WORDS[@]}" | awk '{print $2}' `
+
+
+
+        while read line
+        do
+                lineforgrep=$(echo "$line" | sed -e 's/.*\/\([^\/]*\)$/\1/')
+
+                DIR_NAME=`echo "$lineforgrep" | grep "$dirname"`
+
+                #DIR_NAME=`echo "$line" | grep "$1"`
+
+
+
+                #[[ "$DIR_NAME" =~ "$1" ]] &&
+                opts="$opts $DIR_NAME"
+
+        done < ~/.j-reference
+
+#       opts="$DIR_NAME"
+
+        COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
+
+}
+
+complete -F _j j
