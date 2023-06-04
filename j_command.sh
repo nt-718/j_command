@@ -2,14 +2,14 @@
 
 j() {
 
-    CURRENT=$(pwd)
-    REF_FILE=~/.j-reference
+    local CURRENT=$(pwd)
+    local REF_FILE=~/.j-reference
 
     # No argument provided and add to the list
     if [[ -z "$1" ]]; then
         if ! grep -Fxq "$CURRENT" $REF_FILE; then
             echo "$CURRENT" >> $REF_FILE
-            echo "$CURRENT was added to the list of visited directories."
+            echo "$CURRENT was added to the directory list."
         fi
         return 0
     fi
@@ -76,15 +76,18 @@ j() {
     # Jump to directory
     while read line; do
         if [[ "$line" =~ "$1" ]]; then
-            DIR_NAME="$line"
+            local DIR_NAME="$line"
             break
         fi
     done < $REF_FILE
 
     if [[ -z "$DIR_NAME" ]]; then
-        echo "No such directory: $1"
+        echo "Not found in the directory list: $1"
         return 1
-    else
+	elif [[ ! -d "$DIR_NAME" || ! -r "$DIR_NAME" ]]; then
+        echo "Invalid directory path: $DIR_NAME"
+		return 1
+	else
         cd "$DIR_NAME"
         return 0
     fi
