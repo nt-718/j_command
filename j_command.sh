@@ -24,6 +24,7 @@ j() {
         echo "  --list, -l            Print the list of visited directories"
         echo "  --sort, -s            Sort the list of visited directories"
         echo "  --clean, -c           Clean the invalid directories from the list"
+		echo "  --remove, -r          Remove the current directory from the list of visited directories"
         echo "  --help, -h            Display this help and exit"
         echo ""
         echo "If no options and directory are provided, the current directory is added to the list of visited directories."
@@ -38,9 +39,11 @@ j() {
     fi
 
     # --remove option
-    # if [[ "$1" == "--remove" || "$1" == "-r" ]]; then
-    #   grep -v "^$2$" "$REF_FILE" > "$REF_FILE.tmp" && mv "$REF_FILE.tmp" "$REF_FILE"
-    # fi
+    if [[ "$1" == "--remove" || "$1" == "-r" ]]; then
+      grep -v "^$CURRENT$" "$REF_FILE" > "$REF_FILE.tmp" && mv "$REF_FILE.tmp" "$REF_FILE"
+      echo "If no options and directory are provided, the current directory is added to the list of visited directories."   
+	  return 0
+	fi
 
     # --list option
     if [[ "$1" == "--list" || "$1" == "-l" ]]; then
