@@ -2,52 +2,85 @@
 
 j() {
 
-	CURRENT=$(pwd)
+    CURRENT=$(pwd)
+    REF_FILE=~/.j-reference
 
-	if [[ -z "$1" ]]; then
-		
-		check=`cat ~/.j-reference | grep -x $CURRENT`
+    # No argument provided
+    if [[ -z "$1" ]]; then
+        if ! grep -Fxq "$CURRENT" $REF_FILE; then
+            echo "$CURRENT" >> $REF_FILE
+            echo "$CURRENT has added to the list of visited directories."
+        fi
+        return 0
+    fi
 
-		if [[ -z "$check" ]]; then
-		
-			echo "$CURRENT" >> ~/.j-reference
-		fi
+    # --help option
+    if [[ "$1" == "--help" || "$1" == "-h" ]]; then
+        echo "Usage: j [OPTIONS] [directory]"
+        echo "Jump to a previously visited directory"
+        echo ""
+        echo "Options:"
+        echo "  --edit, -e            Open the list of visited directories in vim"
+        echo "  --list, -l            Print the list of visited directories"
+        echo "  --sort, -s            Sort the list of visited directories"
+        echo "  --clean, -c           Clean the invalid directories from the list"
+        echo "  --help, -h            Display this help and exit"
+        echo ""
+        echo "If no options and directory are provided, the current directory is added to the list of visited directories."
+        return 0
+    fi
 
-	elif [[ "$1" == --edit ]]; then
-		vim ~/.j-reference
-	
-	elif [[ "$1" == --list ]]; then
-		cat ~/.j-reference
+    # --edit option
+    if [[ "$1" == "--edit" || "$1" == "-e" ]]; then
+        vim $REF_FILE
+        echo "Edit mode has finished."
+        return 0
+    fi
 
-	#elif [[ "$1" == --start ]]; then
-	
-	#	PROMPT_COMMAND=${PROMPT_COMMAND:+"$PROMPT_COMMAND; "}'j'
+    # --remove option
+    # if [[ "$1" == "--remove" || "$1" == "-r" ]]; then
+    #   grep -v "^$2$" "$REF_FILE" > "$REF_FILE.tmp" && mv "$REF_FILE.tmp" "$REF_FILE"
+    # fi
 
-	elif [[ -z "$1" ]]; then
-		echo $CURRENT >> ~/.j-reference
+    # --list option
+    if [[ "$1" == "--list" || "$1" == "-l" ]]; then
+        echo "The list of visited directories:"
+        cat $REF_FILE
+        return 0
+    fi
 
-	elif [[ "$1" == --sort ]]; then
-		sortfile=`cat ~/.j-reference | awk '{print length() ,$0}' | sort -n | awk '{print $2}'`
+    # --sort option
+    if [[ "$1" == "--sort" || "$1" == "-s" ]]; then
+        sortfile=$(cat $REF_FILE | awk '{print length() ,$0}' | sort -n | awk '{print $2}')
+        echo "$sortfile" > $REF_FILE
+        echo "The list of visited directories has sorted."
+        return 0
+    fi
 
-		echo "$sortfile" > ~/.j-reference
+    # --clean option
+    if [[ "$1" == "--clean" || "$1" == "-c" ]]; then
+        while read -r line; do
+            if [[ ! -d "$line" || ! -r "$line" ]]; then
+                grep -v "^$line$" "$REF_FILE" > "$REF_FILE.tmp" && mv "$REF_FILE.tmp" "$REF_FILE"
+            fi
+        done < "$REF_FILE"
+        echo "Invalid directories has cleaned."
+        return 0
+    fi
 
-	else	
+    # Assume $1 is a directory to search for and navigate to
+    while read line; do
+        if [[ "$line" =~ "$1" ]]; then
+            DIR_NAME="$line"
+            break
+        fi
+    done < $REF_FILE
 
-		while read line
-	do
-		#lineforgrep=${line,,}
-		#DIR_NAME=`echo "$line" | grep "$1" | sed -e 's/.*\/\([^\/]*\)$/\1/'`
-		DIR_NAME=`echo "$line" | grep "$1"`
-
-		[[ "$DIR_NAME" =~ "$1" ]] && break
-
-	done < ~/.j-reference
-
-		if [[ -z "$line" ]]; then
-			echo "No such a directory"
-		else
-			cd "$line"
-		fi
-	fi
+    if [[ -z "$DIR_NAME" ]]; then
+        echo "No such directory: $1"
+        return 1
+    else
+        cd "$DIR_NAME"
+        return 0
+    fi
 }
-
