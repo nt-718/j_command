@@ -9,7 +9,7 @@ j() {
     if [[ -z "$1" ]]; then
         if ! grep -Fxq "$CURRENT" $REF_FILE; then
             echo "$CURRENT" >> $REF_FILE
-            echo "$CURRENT has added to the list of visited directories."
+            echo "$CURRENT was added to the list of visited directories."
         fi
         return 0
     fi
@@ -34,14 +34,14 @@ j() {
     # --edit option
     if [[ "$1" == "--edit" || "$1" == "-e" ]]; then
         vim $REF_FILE
-        echo "Edit mode has finished."
+        echo "Edit mode was finished."
         return 0
     fi
 
     # --remove option
     if [[ "$1" == "--remove" || "$1" == "-r" ]]; then
       grep -v "^$CURRENT$" "$REF_FILE" > "$REF_FILE.tmp" && mv "$REF_FILE.tmp" "$REF_FILE"
-      echo "If no options and directory are provided, the current directory is added to the list of visited directories."   
+      echo "$CURRENT was removed from the list of visited directories."   
 	  return 0
 	fi
 
@@ -56,7 +56,7 @@ j() {
     if [[ "$1" == "--sort" || "$1" == "-s" ]]; then
         sortfile=$(cat $REF_FILE | awk '{print length() ,$0}' | sort -n | awk '{print $2}')
         echo "$sortfile" > $REF_FILE
-        echo "The list of visited directories has sorted."
+        echo "The list of visited directories was sorted."
         return 0
     fi
 
@@ -67,11 +67,11 @@ j() {
                 grep -v "^$line$" "$REF_FILE" > "$REF_FILE.tmp" && mv "$REF_FILE.tmp" "$REF_FILE"
             fi
         done < "$REF_FILE"
-        echo "Invalid directories has cleaned."
+        echo "Invalid directories was cleaned."
         return 0
     fi
 
-    # Assume $1 is a directory to search for and navigate to
+    # Jump to directory
     while read line; do
         if [[ "$line" =~ "$1" ]]; then
             DIR_NAME="$line"
