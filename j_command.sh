@@ -5,7 +5,7 @@ j() {
     CURRENT=$(pwd)
     REF_FILE=~/.j-reference
 
-    # No argument provided
+    # No argument provided and add to the list
     if [[ -z "$1" ]]; then
         if ! grep -Fxq "$CURRENT" $REF_FILE; then
             echo "$CURRENT" >> $REF_FILE
@@ -16,15 +16,17 @@ j() {
 
     # --help option
     if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-        echo "Usage: j [OPTIONS] [directory]"
         echo "Jump to a previously visited directory"
         echo ""
+        echo "Usage to jump: j [directory]"
+		echo "Usage to opt: j [Options]"
+		echo ""
         echo "Options:"
-        echo "  --edit, -e            Open the list of visited directories in vim"
-        echo "  --list, -l            Print the list of visited directories"
-        echo "  --sort, -s            Sort the list of visited directories"
-        echo "  --clean, -c           Clean the invalid directories from the list"
-		echo "  --remove, -r          Remove the current directory from the list of visited directories"
+        echo "  --edit, -e            Open the directory list in vim"
+        echo "  --list, -l            Show the directory list"
+        echo "  --sort, -s            Sort the directory list"
+        echo "  --clean, -c           Clean invalid directories from the list"
+		echo "  --remove, -r          Remove the current directory from the directory list"
         echo "  --help, -h            Display this help and exit"
         echo ""
         echo "If no options and directory are provided, the current directory is added to the list of visited directories."
